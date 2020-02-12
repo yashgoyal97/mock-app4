@@ -21,6 +21,9 @@ class MockApp4App extends PolymerElement {
     <iron-pages selected="[[page]]" attr-for-selected="name" role="main">
       <login-page name="login"></login-page>
       <dashboard-page name="dashboard" id="dashboard"></dashboard-page>
+      <doctor-page name="doctor"></doctor-page>
+      <landing-page name="landing"></landing-page>
+      <slot-page name="slot"></slot-page>
       <view404-page name='view404'></view404-page>
     </iron-pages>
     `;
@@ -47,11 +50,12 @@ class MockApp4App extends PolymerElement {
     ];
   }
 
-  ready(){
+  ready() {
     super.ready()
-    this.addEventListener('refresh-dashboard',function(event){
-      console.log(sessionStorage.getItem('doctorId'),'main');
-      console.log(sessionStorage.getItem('doctorName'),'main');
+    this.addEventListener('refresh-dashboard', function (event) {
+      this.$.dashboard._handleUserLogIn();
+    });
+    this.addEventListener('new-slot', function (event) {
       this.$.dashboard._handleUserLogIn();
     });
   }
@@ -61,9 +65,10 @@ class MockApp4App extends PolymerElement {
    * @param {String} page 
    */
   _routePageChanged(page) {
+    console.log(page)
     if (!page) {
-      this.page = 'dashboard';
-    } else if (['login', 'dashboard'].indexOf(page) !== -1) {
+      this.page = 'login';
+    } else if (['login', 'dashboard', 'doctor', 'slot', 'landing'].indexOf(page) !== -1) {
       this.page = page;
     } else {
       this.page = 'view404';
@@ -75,12 +80,22 @@ class MockApp4App extends PolymerElement {
    * @param {String} page 
    */
   _pageChanged(page) {
+    console.log(page)
     switch (page) {
       case 'login':
         import('./login-page.js');
         break;
       case 'dashboard':
         import('./dashboard-page.js');
+        break;
+      case 'doctor':
+        import('./doctor-page.js');
+        break;
+      case 'slot':
+        import('./slot-page.js');
+        break;
+      case 'landing':
+        import('./landing-page.js');
         break;
       case 'view404':
         import('./view404-page.js');

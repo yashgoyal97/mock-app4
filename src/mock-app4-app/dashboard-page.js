@@ -215,6 +215,7 @@ class DashboardPage extends PolymerElement {
                     </template>                    
                 </div>
             </div>
+            
 
             <iron-ajax id='ajax' handle-as='json' on-response='_handleResponse' on-error='_handleError' content-type='application/json'></iron-ajax>
         `;
@@ -252,8 +253,6 @@ class DashboardPage extends PolymerElement {
     _handleUserLogIn() {
         this.doctorId = sessionStorage.getItem('doctorId');
         this.doctorName = sessionStorage.getItem('doctorName');
-        console.log(sessionStorage.getItem('doctorId'),'dashboard');
-        console.log(sessionStorage.getItem('doctorName'),'dashboard');
         let bookedSlotReq = (this._getAjaxConfig(`http://10.117.189.201:9090/lifelinehealthcare/users/${this.doctorId}/slots?statusType=${this.booked}`, 'get')).generateRequest();
         let availableSlotReq = (this._getAjaxConfig(`http://10.117.189.201:9090/lifelinehealthcare/users/${this.doctorId}/slots?statusType=${this.available}`, 'get')).generateRequest();
 
@@ -262,11 +261,13 @@ class DashboardPage extends PolymerElement {
         Promise.all([bookedSlotReq.completes,availableSlotReq.completes]).then(function (requests) {
             thisContext.bookedSlots = requests[0].response.slots;
             thisContext.availableSlots = requests[1].response.slots;
+            sessionStorage.setItem('bookedSlots',requests[0].response.slots);
+            sessionStorage.setItem('availableSlots',requests[1].response.slots);
         });
     }
 
     _handleAddSlot() {
-
+        this.set('route.path','/slot');
     }
 
     _handleLogout() {

@@ -3,9 +3,11 @@
   "npm": true,
   "entrypoint": "index.html",
   "shell": "src/mock-app4-app/mock-app4-app.js",
+  "basePath": "hospital",
   "sources": [
     "src/**/*",
     "manifest/**",
+    "images/*",
     "package.json"
   ],
   "fragments": [

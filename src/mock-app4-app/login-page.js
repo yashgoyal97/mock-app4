@@ -15,7 +15,7 @@ class LoginPage extends PolymerElement {
 
             <style>
             .container{
-                background-image:url("../../images/background.jpg");
+                background-image:url("images/background.jpg");
                 height:640px;
             }
             #loginForm{
@@ -90,6 +90,10 @@ class LoginPage extends PolymerElement {
             }
         };
     }
+    connectedCallback() {
+        super.connectedCallback();
+        console.log(this.route)
+    }
 
     //validates if the user exist and logs in to the user portal
     _handleLogin() {
@@ -97,7 +101,7 @@ class LoginPage extends PolymerElement {
             let loginPostObj = { phoneNumber: parseInt(this.$.username.value), password: this.$.password.value };
             this.$.loginForm.reset();
             this.action = 'list';
-            this._makeAjax(`${baseUrl}/lifelinehealthcare/login`, 'post', loginPostObj);
+            this._makeAjax(`http://10.117.189.147:9090/lifelinehealthcare/login`, 'post', loginPostObj);
         }
     }
 
@@ -113,7 +117,9 @@ class LoginPage extends PolymerElement {
                     sessionStorage.setItem('doctorId', this.loggedInUser.userId);
                     sessionStorage.setItem('doctorName', this.loggedInUser.name);
                     this.dispatchEvent(new CustomEvent('refresh-dashboard', { detail: {}, bubbles: true, composed: true }));
-                    this.set('route.path', '/dashboard');
+                     this.set('route.path', '/dashboard');
+                    // window.history.pushState({}, null, '/dashboard');
+                    // window.dispatchEvent(new CustomEvent('location-changed'))
                 }
 
                 //handling the exception
