@@ -6,7 +6,6 @@ import '@polymer/app-route/app-location.js';
 import '@polymer/polymer/lib/elements/dom-repeat.js';
 import '@polymer/paper-card/paper-card.js';
 import '@polymer/paper-dialog/paper-dialog.js';
-import '@polymer/paper-toast/paper-toast.js';
 
 class DoctorPage extends PolymerElement {
     static get template() {
@@ -148,27 +147,12 @@ class DoctorPage extends PolymerElement {
                     background-color:rgb(48, 133, 48);
                     border-radius: 5px;
                     position:relative;
-                    left:110px;
+                    left:120px;
                     height:100px;
                     width:30px;
                 }
                 confirmSlotDialog{
                     padding:20px;
-                }
-                #confirmationButton{
-                background-color:green;
-                color:white;
-                width:100%;
-                }
-                paper-dialog{
-                    width:40%
-                }
-          
-                #data{
-                    display:flex;
-                    border:2px dashed green;
-                    flex-direction:row;
-                    justify-content:space-around;
                 }
             </style>
             <app-location route="{{route}}"></app-location>
@@ -190,11 +174,12 @@ class DoctorPage extends PolymerElement {
                         <div class='accountDetails' id="ad1">
                             <h4>ID: <span class='values'>{{doctorDetails.userId}}</span></h4>
                             <h4>NAME: <span class='values'>{{doctorDetails.name}}</span></h4>
-                            <h4> QUALIFICATION: <span class='values'>{{doctorDetails.educationQualification}}</span></h4>
+                            <h4> QUALIFICATION: <span class='values'>{{doctorDetails.educationalQualification}}</span></h4>
                         </div> 
                         <div class='accountDetails' id="ad2">
                             <h4> EXPERIENCE: <span class='values'>{{doctorDetails.yearsOfExperience}}</span></h4>
                             <h4> CATEGORY: <span class='values'>{{doctorDetails.category}}</span></h4>
+                            <h4> FEEDBACK: <span class='values'>{{doctorDetails.feedback}}</span></h4>
                         </div>
                     </div>
 
@@ -203,45 +188,39 @@ class DoctorPage extends PolymerElement {
                             <h2 id='slotHeader'>Available Slots</h2>
                         </div>
                         <template is='dom-repeat' items='{{availableSlots}}'>
-                                <div class="availableSlots">
-                                    <div class='slotDetails' id="ad1">
-                                        <h5>Date: <span class='values'>{{item.slotDate}}</span></h5>
-                                        <h5>Hospital: <span class='values'>{{item.hospitalDetail}}</span></h5>
-                                    </div> 
-                                    <div class='slotDetails' id="ad2">
-                                    
-                                        <h5>From: <span class='slotValues'>{{item.slotTimeFrom}}</span></h5>
-                                        <h5>To: <span class='slotValues'>{{item.slotTimeTo}}</span></h5>
-                                    </div>
-                                    <div>
-                                        <paper-button id='bookThisSlotBtn' on-click='_handleAddThisSlot'><iron-icon icon='add-circle'></iron-icon></paper-button>
-                                    </div>
-                                </div>  
+                            <div class="availableSlots">
+                                <div class='slotDetails' id="ad1">
+                                    <h5>Date: <span class='values'>{{item.slotDate}}</span></h5>
+                                    <h5>From: <span class='slotValues'>{{item.slotTimeFrom}}</span></h5>
+                                    <h5>To: <span class='slotValues'>{{item.slotTimeTo}}</span></h5>
+                                </div> 
+                                <div class='slotDetails' id="ad2">
+                                    <h5>Hospital: <span class='values'>{{item.hospitalDetail}}</span></h5>
+                                    <h5>Disease: <span class='slotValues'>{{item.diseaseDetail}}</span></h5>
+                                </div>
+                            </div>
                         </template>
-                                
+                        <div class="availableSlots">
+                            <div class='slotDetails' id="ad1">
+                                <h5>Date: <span class='values'>{{item.slotDate}}</span></h5>
+                                <h5>From: <span class='slotValues'>{{item.slotTimeFrom}}</span></h5>
+                                <h5>To: <span class='slotValues'>{{item.slotTimeTo}}</span></h5>
+                            </div> 
+                            <div class='slotDetails' id="ad2">
+                                <h5>Hospital: <span class='values'>{{item.hospitalDetail}}</span></h5>
+                                <h5>Disease: <span class='slotValues'>{{item.diseaseDetail}}</span></h5>
+                            </div>
+                            <div>
+                                <paper-button id='bookThisSlotBtn' on-click='_handleAddThisSlot'><iron-icon icon='add-circle'></iron-icon></paper-button>
+                            </div>
+                        </div>                    
                     </div>
                 </div>
             </div>
             <paper-dialog id='confirmSlotDialog'>
-            <div id="details">
-            <div id="data">
-            <div>
-            <h3>From Time:{{thisSlot.slotTimeFrom}}</h3>
-            <h3>Slot Date:{{thisSlot.slotDate}}</h3>
-            </div><div>
-            <h3>To Time:{{thisSlot.slotTimeTo}}</h3>
-            <h3>Location:{{thisSlot.hospitalDetail}}</h3>
-            </div>
-            </div>
-            <paper-input id="patientName" label="Patient Name" ></paper-input>
-            <paper-input id="disease" label="Disease Detail" ></paper-input>
-            <paper-input id="contactNumber" type="text" label="Contact Number" ></paper-input>
-            <paper-input id="remarks" label="Remarks" type="text"></paper-input>
-            <paper-button raised id="confirmationButton" on-click="_bookingConfirmed">Confirm Booking</paper-button>
-      
-           </div>
+                
             </paper-dialog>
-            <iron-ajax id='ajax' handle-as='json' content-type='application/json'></iron-ajax>
+            <iron-ajax id='ajax' handle-as='json' on-response='_handleResponse' on-error='_handleError' content-type='application/json'></iron-ajax>
         `;
     }
 
@@ -249,21 +228,17 @@ class DoctorPage extends PolymerElement {
         return {
             doctorId: Number,
             doctorName: String,
-            doctorDetails: {
-                type: Array,
-                value: []
+            doctorDetails:{
+                type:Array,
+                value:[]
             },
-            availableSlots: {
-                type: Array,
-                value: []
+            availableSlots:{
+                type:Array,
+                value:[]
             },
-            available: {
-                type: String,
-                value: "AVAILABLE"
-            },
-            thisSlot: {
-                type: Array,
-                value: []
+            available:{
+                type:String,
+                value:"AVAILABLE"
             }
         };
     }
@@ -274,49 +249,25 @@ class DoctorPage extends PolymerElement {
         this.doctorName = sessionStorage.getItem('doctorName');
     }
 
-    _handleGoToLogin() {
-        // this.set('route.path', '/login');
-        window.history.pushState({}, null, '#/login');
-        window.dispatchEvent(new CustomEvent('location-changed'));
-    }
-    bookThisSlotBtn(event) {
-        this.$.confirmSlotDialog.open();
-    }
-    _bookingConfirmed() {
-        let patientName = this.$.patientName.value;
-        let disease = this.$.disease.value;
-        let patientPhoneNumber = this.$.contactNumber.value;
-        let remarks = this.$.remarks.value;
-        let bookingObj = { patientName: patientName, diseaseDetail: disease, patientPhoneNumber: parseInt(patientPhoneNumber), remarks: remarks }
-        console.log(bookingObj, "slotID")
-        let confirmReq = (this._postAjaxConfig(`http://10.117.189.181:9090/lifelinehealthcare/users/${this.doctorId}/slots/${this.thisSlot.slotId}`, 'post', bookingObj)).generateRequest();
-        let thisContext = this;
-        Promise.all([confirmReq.completes]).then(function (requests) {
-            console.log(requests)
-            if (requests[0].response.statusCode === 200) {
-                // thisContext.set('route.path', '/landing');
-                window.history.pushState({}, null, '#/landing');
-                window.dispatchEvent(new CustomEvent('location-changed'));
-            }
-        });
+    _handleGoToLogin(){
+        this.set('route.path','/login');
     }
 
     _handleDoctor() {
         this.doctorId = sessionStorage.getItem('doctorId');
-        console.log(this.doctorId, "YASH");
-        let doctorDataReq = (this._getAjaxConfig(`http://10.117.189.181:9090/lifelinehealthcare/users/${this.doctorId}`, 'get')).generateRequest();
-        let availableSlotReq = (this._getAjaxConfig(`http://10.117.189.181:9090/lifelinehealthcare/users/${this.doctorId}/slots?statusType=${this.available}`, 'get')).generateRequest();
+        let doctorDataReq = (this._getAjaxConfig(`http://10.117.189.201:9090/lifelinehealthcare/users/${this.doctorId}`, 'get')).generateRequest();
+        let availableSlotReq = (this._getAjaxConfig(`http://10.117.189.201:9090/lifelinehealthcare/users/${this.doctorId}/slots?statusType=${this.available}`, 'get')).generateRequest();
         let thisContext = this;
-        Promise.all([doctorDataReq.completes, availableSlotReq.completes]).then(function (requests) {
+        Promise.all([doctorDataReq.completes,availableSlotReq.completes]).then(function (requests) {
             thisContext.doctorDetails = requests[0].response;
             thisContext.availableSlots = requests[1].response.slots;
-
+            console.log(thisContext.doctorDetails,"doctor");
+            console.log(thisContext.availableSlots,"doctor");
         });
     }
 
-    _handleAddThisSlot(event) {
-        this.thisSlot = event.model.item;
-        console.log(this.thisSlot)
+    _handleAddThisSlot(event){
+        console.log(event.detail.response);
         this.$.confirmSlotDialog.open();
     }
 

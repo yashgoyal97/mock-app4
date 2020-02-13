@@ -15,8 +15,42 @@ class LoginPage extends PolymerElement {
 
             <style>
             .container{
-                background-image:url("images/background.jpg");
-                height:640px;
+                display:grid;
+                grid-template-rows:60px auto;
+                grid-template-columns:auto;
+                grid-template-areas:"h""b";
+              }
+              .header{
+                  grid-area:h;
+                  background-color:rgb(0,85,130);
+                  color:white;
+                  padding:10px;
+              }
+              .body{
+                grid-area:b;
+                padding:10px;
+                background-color:rgba(0,85,130,0.1);
+                height:545px;
+            }
+            #headerLogo{
+                margin:0px;
+                position:relative;
+                bottom:20px;
+                left:50px;
+                width:300px;
+            }
+            #headerAction{
+                position:relative;
+                bottom:80px;
+                left:1100px;
+                width:250px;
+            }
+            #landingButton{
+                background-color:white;
+                color:black;
+                height:58px;
+                position:relative;
+                bottom:8px;
             }
             #loginForm{
                 padding:5px 25px 20px 25px;;
@@ -29,7 +63,7 @@ class LoginPage extends PolymerElement {
                 background-color:rgba(255,255,255,0.7);
                 position:relative;
                 left:430px;
-                top:180px;
+                top:160px;
             }
             form{
                 width:400px;
@@ -59,18 +93,29 @@ class LoginPage extends PolymerElement {
             }
             </style>
             <app-location route="{{route}}"></app-location>
-            <div class='container'>
-                <iron-form id='loginForm'>
-                    <form>
-                        <div id='loginFields'>
-                            <paper-input id='username' name='username' label='Enter Phone No' allowed-pattern="[0-9]" maxlength="10" minlength="10" required always-float-label><iron-icon icon='perm-identity' slot='suffix'></iron-icon></paper-input>
-                            <paper-input id='password' name='password' label='Enter Password' type='password' required always-float-label><iron-icon icon='lock' slot='suffix'></iron-icon></paper-input>
-                        </div>
-                        <div id='loginAction'>
-                            <paper-button name='loginButton' id='loginButton' on-click='_handleLogin' raised>Login</paper-button>                
-                        </div>
-                    </form>
-                </iron-form>
+            <div class="container">
+                <div class='header'>
+                    <div id='headerLogo'>
+                        <h1 id='logo'>Lifeline Health Care</h1>
+                    </div>
+                    <div id='headerAction'>
+                        <paper-button id='landingButton' on-click='_handleGoToHome'>HOMEPAGE<iron-icon icon='home'></iron-icon></paper-button>
+                    </div>
+                </div>
+                
+                <div class='body'>
+                    <iron-form id='loginForm'>
+                        <form>
+                            <div id='loginFields'>
+                                <paper-input id='username' name='username' label='Enter Phone No' allowed-pattern="[0-9]" maxlength="10" minlength="10" required always-float-label><iron-icon icon='perm-identity' slot='suffix'></iron-icon></paper-input>
+                                <paper-input id='password' name='password' label='Enter Password' type='password' required always-float-label><iron-icon icon='lock' slot='suffix'></iron-icon></paper-input>
+                            </div>
+                            <div id='loginAction'>
+                                <paper-button name='loginButton' id='loginButton' on-click='_handleLogin' raised>Login</paper-button>                
+                            </div>
+                        </form>
+                    </iron-form>
+                </div>
             </div>
             <paper-toast id='toast0' text='Invalid Credentials'></paper-toast>
             <paper-toast id='toast1' text='Connection Error'></paper-toast>
@@ -95,13 +140,19 @@ class LoginPage extends PolymerElement {
         console.log(this.route)
     }
 
+    _handleGoToHome() {
+        // this.set('route.path','#/landing');
+        window.history.pushState({}, null, '#/landing');
+        window.dispatchEvent(new CustomEvent('location-changed'));
+    }
+
     //validates if the user exist and logs in to the user portal
     _handleLogin() {
         if (this.$.loginForm.validate()) {
             let loginPostObj = { phoneNumber: parseInt(this.$.username.value), password: this.$.password.value };
             this.$.loginForm.reset();
             this.action = 'list';
-            this._makeAjax(`http://10.117.189.147:9090/lifelinehealthcare/login`, 'post', loginPostObj);
+            this._makeAjax(`http://10.117.189.181:9090/lifelinehealthcare/login`, 'post', loginPostObj);
         }
     }
 
@@ -117,9 +168,9 @@ class LoginPage extends PolymerElement {
                     sessionStorage.setItem('doctorId', this.loggedInUser.userId);
                     sessionStorage.setItem('doctorName', this.loggedInUser.name);
                     this.dispatchEvent(new CustomEvent('refresh-dashboard', { detail: {}, bubbles: true, composed: true }));
-                     this.set('route.path', '/dashboard');
-                    // window.history.pushState({}, null, '/dashboard');
-                    // window.dispatchEvent(new CustomEvent('location-changed'))
+                    // this.set('route.path', '/dashboard');
+                    window.history.pushState({}, null, '#/dashboard');
+                    window.dispatchEvent(new CustomEvent('location-changed'));
                 }
 
                 //handling the exception

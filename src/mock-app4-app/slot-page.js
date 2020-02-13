@@ -74,77 +74,79 @@ class SlotPage extends PolymerElement {
         return {
             locationList: {
                 type: Array,
-                value:[]
+                value: []
             },
-            action:{
+            action: {
                 type: String,
-                value:'Location'
+                value: 'Location'
             },
-            successMeassage:{
-                type:Array,
-                value:[]
+            successMeassage: {
+                type: Array,
+                value: []
             },
             doctorId: Number,
             doctorName: String
         }
     };
-    connectedCallback(){
+    connectedCallback() {
         super.connectedCallback();
-        this.action='Location';
-        this._makeAjaxCall('http://10.117.189.147:9090/lifelinehealthcare/locations','get',null);
+        this.action = 'Location';
+        this._makeAjaxCall('http://10.117.189.181:9090/lifelinehealthcare/locations', 'get', null);
     }
 
-    _handleResponse(event){
+    _handleResponse(event) {
 
-        switch(this.action){
-            case 'Location':{            
-                    this.locationList=event.detail.response.locationDto;
-                    break;
-                }
-            case 'Add':{
-                if(event.detail.response.statusCode==200){    
+        switch (this.action) {
+            case 'Location': {
+                this.locationList = event.detail.response.locationDto;
+                break;
+            }
+            case 'Add': {
+                if (event.detail.response.statusCode == 200) {
                     this.successMeassage = event.detail.response.meassage;
                     this.$.success.open();
                 }
 
-            break;
-        }
-        default: break;
-            
+                break;
+            }
+            default: break;
+
         }
     }
-    
+
     _onClick() {
-        this.doctorId=sessionStorage.getItem('doctorId');
-        this.doctorName=sessionStorage.getItem('doctorName');
+        this.doctorId = sessionStorage.getItem('doctorId');
+        this.doctorName = sessionStorage.getItem('doctorName');
         let date = this.$.date.value;
         let from = this.$.fromTime.value;
         let to = this.$.toTime.value;
         let fromTime = from.slice(0, 2);
         let toTime = to.slice(0, 2);
-        
+
         let location = this.$.location.value;
         let hospital = this.$.hospitalDetails.value;
         if (fromTime < toTime) {
-            let slotObj = { slotDate: date, slotTimeFrom: fromTime, slotTimeTo:toTime, locationId: location, hospitalDetail: hospital };
+            let slotObj = { slotDate: date, slotTimeFrom: fromTime, slotTimeTo: toTime, locationId: location, hospitalDetail: hospital };
             console.log(slotObj);
-            this.action='Add'
-            this._makeAjaxCall(`http://10.117.189.201:9090/lifelinehealthcare/users/${this.doctorId/slots}`,'post',slotObj);
-            this.dispatchEvent(new CustomEvent('new-slot',{detail:{},bubbles:true,composed:true}));
-            this.set('route.path','/dashboard');
+            this.action = 'Add'
+            this._makeAjaxCall(`http://10.117.189.181:9090/lifelinehealthcare/users/${this.doctorId}/slots`, 'post', slotObj);
+            this.dispatchEvent(new CustomEvent('new-slot', { detail: {}, bubbles: true, composed: true }));
+            // this.set('route.path', '/dashboard');
+            window.history.pushState({}, null, '#/dashboard');
+            window.dispatchEvent(new CustomEvent('location-changed'));
         }
         else {
             this.$.toast0.open();
         }
     }
 
-      _makeAjaxCall(url, method, postObj, action) {
+    _makeAjaxCall(url, method, postObj, action) {
         const ajax = this.$.ajax;
         ajax.method = method;
         ajax.url = url;
         ajax.body = postObj ? JSON.stringify(postObj) : undefined;
         ajax.generateRequest();
-      }
+    }
 }
 
 window.customElements.define('slot-page', SlotPage);

@@ -5,6 +5,12 @@ import '@polymer/iron-collapse/iron-collapse.js';
 import '@polymer/app-route/app-location.js';
 import '@polymer/polymer/lib/elements/dom-repeat.js';
 import '@polymer/paper-card/paper-card.js';
+import '@vaadin/vaadin-date-picker/vaadin-date-picker.js';
+import '@vaadin/vaadin-time-picker/vaadin-time-picker.js';
+import '@vaadin/vaadin-select/vaadin-select.js';
+import '@polymer/paper-input/paper-input.js';
+import '@polymer/paper-button/paper-button.js';
+import '@polymer/paper-toast/paper-toast.js';
 
 class DashboardPage extends PolymerElement {
     static get template() {
@@ -12,15 +18,15 @@ class DashboardPage extends PolymerElement {
             <style>
                 .container{
                     display:grid;
-                    background-color:rgba(100,100,255,0.3);
-                    grid-template-rows:60px auto auto;
+                    grid-template-rows:70px auto auto;
                     grid-template-columns:auto;
                     grid-template-areas:"h""md""td";
                 }
                 .header{
                     grid-area:h;
-                    background-color:rgba(0,0,0,0.8);
+                    background-color:rgb(0,85,130);
                     color:white;
+                    padding:10px;
                 }
                 .myDetails{
                     grid-area:md;
@@ -33,7 +39,7 @@ class DashboardPage extends PolymerElement {
                     height:100px;
                     width:1100px;
                     margin:20px;
-                    background-color:rgba(255,255,255,0.7);
+                    background-color:rgba(0,0,0,0.1);
                     position:relative;
                     left:80px;
                     z-index:1;
@@ -72,17 +78,13 @@ class DashboardPage extends PolymerElement {
                     grid-area:td;
                     padding:20px;
                     border-radius:5px;
-                    width:1080px;
                     margin:20px;
                     background-color:rgba(255,255,255,0.7);
-                    position:relative;
-                    left:80px;
-                    z-index:1;
                 }
                 #headerAction{
                     position:relative;
-                    bottom:71px;
-                    left:1070px;
+                    bottom:115px;
+                    left:1150px;
                     width:250px;
                 }
                 iron-collapse{
@@ -129,40 +131,48 @@ class DashboardPage extends PolymerElement {
                 #welcome{
                     position:relative;
                     bottom:50px;
-                    left:1000px;                    
+                    left:900px;                   
                 }
                 #logo{
                     margin-left:50px;
                 }
                 #addSlot{
-                    background-color:rgba(10,10,255,0.8);
                     color:white;
+                    background-color:rgb(48, 133, 48);
+                    border-radius: 5px;
+                    height:40px;
                     position:relative;
                     left:360px;
                     bottom:50px;
                 }
                 #slotHeader{
-                    background-color:rgba(10,10,255,0.5);
+                    background-color:rgba(0,85,130,0.7);
                     border-radius:5px;
                     color:white;
-                    padding: 10px;
-                    width:600px;
+                    padding: 10px 10px 10px 30px;
+                }
+                .expandSlot{
+                    color:white;
+                    position:relative;
+                    left:1200px;
+                    bottom:55px;
+                }
+                .slotHeaderDiv{
+                    height:40px;
+                }
+                #addNewSlotDialog{
+                    padding:20px;
                 }
             </style>
             <app-location route="{{route}}"></app-location>
             <div class="container">
                 <div class="header">
                     <div id='headerLogo'>
-                        <h1 id='logo'>Lifeline Health Care <iron-icon icon='add'></iron-icon></h1>
-                        <h3 id='welcome'>Welcome, <span class='values'>{{doctorName}}</span></h3>
+                        <h1 id='logo'>Lifeline Health Care</h1>
+                        <h3 id='welcome'>Welcome, {{doctorName}}</h3>
                     </div>
                     <div id='headerAction'>
-                        <iron-icon icon='expand-more' on-click='_handleCollapse' id='expandTrigger'></iron-icon>
-                        <iron-collapse id='collapsibleLogout'>
-                            <div id='logoutDropdown'>
-                                <paper-button on-click='_handleLogout'>LOGOUT<iron-icon icon="settings-power"></iron-icon></paper-button>
-                            </div>
-                        </iron-collapse>
+                         <paper-button on-click='_handleLogout'>LOGOUT<iron-icon icon="settings-power"></iron-icon></paper-button>
                     </div>
                 </div>
 
@@ -178,44 +188,76 @@ class DashboardPage extends PolymerElement {
                 </div>
 
                 <div class="transferDetails">
-                    <div>
-                        <h2 id='slotHeader'>Booked Slots</h2>
+                    <div on-click="_handleCollapseBookedSlots"  class='slotHeaderDiv'>
+                        <h2 id='slotHeader'>Booked Slots</h2><iron-icon icon='expand-more' class='expandSlot' id='expandBookedSlots'></iron-icon>
                     </div>
-                    <template is='dom-repeat' items='{{bookedSlots}}'>
-                        <div class="bookedSlots">
-                            <div class='slotDetails' id="ad1">
-                                <h5>Date: <span class='values'>{{item.slotDate}}</span></h5>
-                                <h5>From: <span class='slotValues'>{{item.slotTimeFrom}}</span></h5>
-                                <h5>To: <span class='slotValues'>{{item.slotTimeTo}}</span></h5>
-                                <h5>Hospital: <span class='values'>{{item.hospitalDetail}}</span></h5>
-                            </div> 
-                            <div class='slotDetails' id="ad2">
-                                <h5>Patient Name: <span class='slotValues'>{{item.patientName}}</span></h5>
-                                <h5>Patient Mobile Number: <span class='values'>{{item.patientPhoneNumber}}</span></h5>
-                                <h5>Disease: <span class='slotValues'>{{item.diseaseDetail}}</span></h5>
+                    <iron-collapse id='bookedSlotsCollapsible'>
+                        <template is='dom-repeat' items='{{bookedSlots}}'>
+                            <div class="bookedSlots">
+                                <div class='slotDetails' id="ad1">
+                                    <h5>Date: <span class='values'>{{item.slotDate}}</span></h5>
+                                    <h5>From: <span class='values'>{{item.slotTimeFrom}}</span></h5>
+                                    <h5>To: <span class='values'>{{item.slotTimeTo}}</span></h5>
+                                    <h5>Hospital: <span class='values'>{{item.hospitalDetail}}</span></h5>
+                                </div> 
+                                <div class='slotDetails' id="ad2">
+                                    <h5>Patient Name: <span class='values'>{{item.patientName}}</span></h5>
+                                    <h5>Patient Mobile Number: <span class='values'>{{item.patientPhoneNumber}}</span></h5>
+                                    <h5>Disease: <span class='values'>{{item.diseaseDetail}}</span></h5>
+                                </div>
                             </div>
-                        </div>
-                    </template>
+                        </template>
+                        
+                    </iron-collapse>
                     
-                    <div>
-                        <h2 id='slotHeader'>Available Slots</h2>
+
+
+
+                    <div on-click="_handleCollapseAvailableSlots" class='slotHeaderDiv'>
+                        <h2 id='slotHeader'>Available Slots</h2><iron-icon icon='expand-more' class='expandSlot' id='expandAvailableSlots'></iron-icon>
                     </div>
-                    <template is='dom-repeat' items='{{availableSlots}}'>
-                        <div class="availableSlots">
-                            <div class='slotDetails' id="ad1">
-                                <h5>Date: <span class='values'>{{item.slotDate}}</span></h5>
-                                <h5>From: <span class='slotValues'>{{item.slotTimeFrom}}</span></h5>
-                                <h5>To: <span class='slotValues'>{{item.slotTimeTo}}</span></h5>
-                            </div> 
-                            <div class='slotDetails' id="ad2">
-                                <h5>Hospital: <span class='values'>{{item.hospitalDetail}}</span></h5>
-                                <h5>Disease: <span class='slotValues'>{{item.diseaseDetail}}</span></h5>
+                    <iron-collapse id='availableSlotsCollapsible'>
+                        <template is='dom-repeat' items='{{availableSlots}}'>
+                            <div class="availableSlots">
+                                <div class='slotDetails' id="ad1">
+                                    <h5>Date: <span class='values'>{{item.slotDate}}</span></h5>
+                                    <h5>Hospital: <span class='values'>{{item.hospitalDetail}}</span></h5>
+                                </div> 
+                                <div class='slotDetails' id="ad2">
+                                    <h5>From: <span class='values'>{{item.slotTimeFrom}}</span></h5>
+                                    <h5>To: <span class='values'>{{item.slotTimeTo}}</span></h5>
+                                </div>
                             </div>
-                        </div>
-                    </template>                    
+                        </template>
+            
+                    </iron-collapse>                    
                 </div>
             </div>
             
+            <paper-dialog id='addNewSlotDialog'>
+                <iron-form id="slotForm">
+                <h2 style="margin:0px">Add New Slot</h2>
+                <hr>
+                <vaadin-date-picker id="date" label="Date" placeholder="Choose Date" required>
+                </vaadin-date-picker>
+                <vaadin-time-picker id="fromTime" label="From" placeholder="Choose Time"></vaadin-time-picker>
+                <vaadin-time-picker id="toTime" label="To" placeholder="Choose Time"></vaadin-time-picker>
+                <vaadin-select id="location" placeholder="Select" label="Location" >
+                <template>
+                <vaadin-list-box >
+                <template is="dom-repeat" placeholder="Select" items={{locationList}}>
+                    <vaadin-item value="{{item.locationId}}" >{{item.locationName}}</vaadin-item>
+                </template>        
+                </vaadin-list-box>
+                </template>
+                </vaadin-select>
+                <paper-input id="hospitalDetails" label="Hospital Details"></paper-input>
+                <paper-button id="confirmSlotBtn" label="Add Slot" on-click="_onClick" raised>Add Slot</paper-button>
+                </iron-form>
+                
+                <paper-toast id="toast0" text="Invalid Slot Timings!!"></paper-toast>
+                <paper-toast id="success" text="Added Successfully!!"></paper-toast>            
+            </paper-dialog>
 
             <iron-ajax id='ajax' handle-as='json' on-response='_handleResponse' on-error='_handleError' content-type='application/json'></iron-ajax>
         `;
@@ -225,54 +267,122 @@ class DashboardPage extends PolymerElement {
         return {
             doctorId: Number,
             doctorName: String,
-            bookedSlots:{
-                type:Array,
-                value:[]
+            bookedSlots: {
+                type: Array,
+                value: []
             },
-            availableSlots:{
-                type:Array,
-                value:[]
+            availableSlots: {
+                type: Array,
+                value: []
             },
-            booked:{
-                type:String,
-                value:"BOOKED"
+            booked: {
+                type: String,
+                value: "BOOKED"
             },
-            available:{
-                type:String,
-                value:"AVAILABLE"
+            available: {
+                type: String,
+                value: "AVAILABLE"
+            },
+            locationList: {
+                type: Array,
+                value: []
+            },
+            successMeassage: {
+                type: Array,
+                value: []
             }
         };
+    }
+
+    _handleCollapseBookedSlots() {
+        if (this.$.bookedSlotsCollapsible.opened) {
+            this.$.bookedSlotsCollapsible.opened = false;
+        }
+        else {
+            this.$.bookedSlotsCollapsible.opened = true;
+        }
+    }
+
+    _handleCollapseAvailableSlots() {
+        if (this.$.availableSlotsCollapsible.opened) {
+            this.$.availableSlotsCollapsible.opened = false;
+        }
+        else {
+            this.$.availableSlotsCollapsible.opened = true;
+        }
     }
 
     connectedCallback() {
         super.connectedCallback();
         this.doctorId = sessionStorage.getItem('doctorId');
         this.doctorName = sessionStorage.getItem('doctorName');
+        this.locationList = sessionStorage.getItem('locationList');
+        this.bookedSlots=sessionStorage.getItem('bookedSlots');
+        this.availableSlots=sessionStorage.getItem('availableSlots');
+    }
+
+
+    _onClick() {
+        this.doctorId = sessionStorage.getItem('doctorId');
+        this.doctorName = sessionStorage.getItem('doctorName');
+        let date = this.$.date.value;
+        let from = this.$.fromTime.value;
+        let to = this.$.toTime.value;
+        let fromTime = from.slice(0, 2);
+        let toTime = to.slice(0, 2);
+
+        let location = this.$.location.value;
+        let hospital = this.$.hospitalDetails.value;
+        if (fromTime < toTime) {
+            let slotObj = { slotDate: date, slotTimeFrom: fromTime, slotTimeTo: toTime, locationId: location, hospitalDetail: hospital };
+            let addSlotReq = (this._postAjaxConfig(`http://10.117.189.181:9090/lifelinehealthcare/users/${this.doctorId}/slots`, 'post', slotObj)).generateRequest();
+            let thisContext = this;
+            Promise.all([addSlotReq.completes]).then(function (requests) {
+                if (requests[0].response.statusCode == 200) {
+                    thisContext.successMessage = requests[0].response.message;
+                    thisContext._handleUserLogIn();
+                    thisContext.$.success.open();
+                }
+            });
+            this._handleUserLogIn();
+            this.$.addNewSlotDialog.close();
+        }
+        else {
+            this.$.toast0.open();
+        }
     }
 
     _handleUserLogIn() {
         this.doctorId = sessionStorage.getItem('doctorId');
         this.doctorName = sessionStorage.getItem('doctorName');
-        let bookedSlotReq = (this._getAjaxConfig(`http://10.117.189.201:9090/lifelinehealthcare/users/${this.doctorId}/slots?statusType=${this.booked}`, 'get')).generateRequest();
-        let availableSlotReq = (this._getAjaxConfig(`http://10.117.189.201:9090/lifelinehealthcare/users/${this.doctorId}/slots?statusType=${this.available}`, 'get')).generateRequest();
+        let locationReq = (this._getAjaxConfig(`http://10.117.189.181:9090/lifelinehealthcare/locations`, 'get')).generateRequest();
+        let bookedSlotReq = (this._getAjaxConfig(`http://10.117.189.181:9090/lifelinehealthcare/users/${this.doctorId}/slots?statusType=${this.booked}`, 'get')).generateRequest();
+        let availableSlotReq = (this._getAjaxConfig(`http://10.117.189.181:9090/lifelinehealthcare/users/${this.doctorId}/slots?statusType=${this.available}`, 'get')).generateRequest();
 
         let thisContext = this;
 
-        Promise.all([bookedSlotReq.completes,availableSlotReq.completes]).then(function (requests) {
+        Promise.all([bookedSlotReq.completes, availableSlotReq.completes, locationReq.completes]).then(function (requests) {
             thisContext.bookedSlots = requests[0].response.slots;
             thisContext.availableSlots = requests[1].response.slots;
-            sessionStorage.setItem('bookedSlots',requests[0].response.slots);
-            sessionStorage.setItem('availableSlots',requests[1].response.slots);
+            thisContext.locationList = requests[2].response.locationDto;
+            console.log(thisContext.locationList)
+            sessionStorage.setItem('bookedSlots', requests[0].response.slots);
+            sessionStorage.setItem('availableSlots', requests[1].response.slots);
+            sessionStorage.setItem('locationList', requests[2].response.locationDto);
         });
+
     }
 
     _handleAddSlot() {
-        this.set('route.path','/slot');
+        this.$.addNewSlotDialog.open();
+        // this.set('route.path','/slot');
     }
 
     _handleLogout() {
         sessionStorage.clear();
-        this.set('route.path', '/login');
+        // this.set('route.path', '/login');
+        window.history.pushState({}, null, '#/login');
+        window.dispatchEvent(new CustomEvent('location-changed'));
     }
 
     _handleCollapse() {

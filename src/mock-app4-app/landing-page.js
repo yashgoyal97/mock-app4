@@ -8,6 +8,8 @@ import '@polymer/paper-card/paper-card.js';
 import '@polymer/polymer/lib/elements/dom-repeat.js';
 import '@polymer/iron-ajax/iron-ajax.js';
 import '@polymer/iron-icons/iron-icons.js';
+import '@polymer/iron-collapse/iron-collapse.js';
+import '@polymer/iron-icons/iron-icons.js';
 
 /**
  * @customElement
@@ -17,143 +19,23 @@ class LandingPage extends PolymerElement {
     static get template() {
         return html`
       <style>
+
       .container{
         display:grid;
-        background-color:rgba(100,100,255,0.3);
         grid-template-rows:60px auto;
         grid-template-columns:auto;
-        grid-template-areas:"h"td";
-    }
-    .header{
-        grid-area:h;
-        background-color:rgba(0,0,0,0.8);
-        color:white;
-    }
-    .myDetails{
-        grid-area:md;
+        grid-template-areas:"h""b";
+       
+      }
+      .header{
+          grid-area:h;
+          background-color:rgb(0,85,130);
+          color:white;
+          padding:10px;
+      }
+      .body{
+        grid-area:b;
         padding:10px;
-        display:flex;
-        flex-direction:row;
-        justify-content:space-around;
-        align-items:center;
-        border-radius:5px;
-        height:100px;
-        width:1100px;
-        margin:20px;
-        background-color:rgba(255,255,255,0.7);
-        position:relative;
-        left:80px;
-        z-index:1;
-    }
-    .bookedSlots{
-        padding:10px;
-        display:flex;
-        flex-direction:row;
-        justify-content:space-around;
-        align-items:center;
-        border-radius:5px;
-        height:140px;
-        width:900px;
-        margin:20px;
-        background-color:rgba(50,255,50,0.5);
-        position:relative;
-        left:80px;
-        z-index:1;
-    }
-    .availableSlots{
-        height:100px;
-        padding:10px;
-        display:flex;
-        flex-direction:row;
-        justify-content:space-around;
-        align-items:center;
-        border-radius:5px;
-        width:900px;
-        margin:20px;
-        background-color:rgba(50,50,50,0.2);
-        position:relative;
-        left:80px;
-        z-index:1;
-    }
-    .transferDetails{
-        grid-area:td;
-        padding:20px;
-        border-radius:5px;
-        width:1080px;
-        margin:20px;
-        background-color:rgba(255,255,255,0.7);
-        position:relative;
-        left:80px;
-        z-index:1;
-    }
-    #headerAction{
-        position:relative;
-        bottom:71px;
-        left:1070px;
-        width:250px;
-    }
-    iron-collapse{
-        width:250px;
-    }
-    #logoutDropdown{
-        display:flex;
-        flex-direction:column;
-        background-color:rgba(0,0,0,0.9);
-        color:white;
-        width:255px;
-        position:relative;
-        bottom:51px;
-        border-radius:2px;
-        z-index:2;
-    }
-    #expandTrigger{
-        background-color:rgba(255,255,255,0.8);
-        color:black;
-        border-radius:2px;
-        height:60px;
-        width:45px;
-        position:relative;
-        bottom:51px;
-        left:210px;
-    }
-    #headerLogo{
-        margin:0px;
-        position:relative;
-        bottom:12px;
-        left:50px
-        width:300px;
-    }
-    .accountDetails{
-        margin:0px 200px 0px 10px
-    }
-    .values{
-        color:green;
-    }
-    #ad1{
-        position:relative;
-        right:80px;
-    }
-    #welcome{
-        position:relative;
-        bottom:50px;
-        left:1000px;                    
-    }
-    #logo{
-        margin-left:50px;
-    }
-    #addSlot{
-        background-color:rgba(10,10,255,0.8);
-        color:white;
-        position:relative;
-        left:360px;
-        bottom:50px;
-    }
-    #slotHeader{
-        background-color:rgba(10,10,255,0.5);
-        border-radius:5px;
-        color:white;
-        padding: 10px;
-        width:600px;
     }
       #searchBar{
           display:flex;
@@ -168,20 +50,21 @@ class LandingPage extends PolymerElement {
         display:flex;
         flex-direction:row;
         justify-content:space-around;
-        flex-wrap:no-wrap;
+        flex-wrap:wrap;
+        width:550px;
       }   
       paper-card{
-        width:100%;
-        margin:10px 0px 10px 0px;
-        padding:10px;
+        padding:20px;
+        border-radius:5px;
+        margin:10px 20px 10px 20px;
+        background-color:rgba(0,85,130,0.1);
       }
    
     #view{
-        width:100%;
         color:white;
         background-color:rgb(48, 133, 48);
-        border-radius: 10px;
-
+        border-radius: 5px;
+        height:40px;
     }
     #doctor{
         display:none;
@@ -189,55 +72,94 @@ class LandingPage extends PolymerElement {
     #category{
         display:none;
     }
+    #headerLogo{
+        margin:0px;
+        position:relative;
+        bottom:20px;
+        left:50px;
+        width:300px;
+    }
+    #headerAction{
+        position:relative;
+        bottom:80px;
+        left:1100px;
+        width:250px;
+    }
+    #loginButton{
+        background-color:white;
+        color:black;
+        height:58px;
+        position:relative;
+        bottom:8px;
+    }
+    paper-input{
+        padding:10px 20px 10px 20px;
+        border-radius:5px;
+        margin:10px 0px 10px 0px;
+        background-color:rgba(255,255,255,1);
+    }
+    #searchBox{
+        background-color:rgba(0,0,0,0.1);
+        border-radius:2px;
+        padding:20px;
+    }
+    #cardHeader{
+        display:flex;
+        flex-direction:row;
+        justify-content:space-around;
+        align-items:center;
+    }
+    #doctorsSearched{
+        padding:20px;
+    }
       </style>
       <app-location route="{{route}}"></app-location>
-            <div class="container">
-                <div class="header">
+           <div class="container">
+                <div class='header'>
                     <div id='headerLogo'>
-                        <h1 id='logo'>Lifeline Health Care <iron-icon icon='add'></iron-icon></h1>
-                        <h3 id='welcome'>Welcome, <span class='values'>{{doctorName}}</span></h3>
+                        <h1 id='logo'>Lifeline Health Care</h1>
                     </div>
                     <div id='headerAction'>
-                        <iron-icon icon='expand-more' on-click='_handleCollapse' id='expandTrigger'></iron-icon>
-                        <iron-collapse id='collapsibleLogout'>
-                            <div id='logoutDropdown'>
-                                <paper-button on-click='_handleLogout'>LOGOUT<iron-icon icon="settings-power"></iron-icon></paper-button>
-                            </div>
-                        </iron-collapse>
+                        <paper-button id='loginButton' on-click='_handleGoToLogin'>DOCTOR PORTAL<iron-icon icon='open-in-new'></iron-icon></paper-button>
                     </div>
                 </div>
+                
+                <div class='body'>
+                    <div id='searchBox'>
+                        <h3>Search By:</h3>
+                        <paper-radio-group id="radio" on-selected-item-changed ="_change" >
+                            <paper-radio-button name="doctor">Doctor Name</paper-radio-button>
+                            <paper-radio-button name="category">Category</paper-radio-button>
+                            <paper-radio-button name="both">Both</paper-radio-button>
+                        </paper-radio-group>
+                        <paper-input type="search" id="doctor" placeholder="Search By Doctor Name" on-input="_handleSearchByDoctor"><iron-icon icon='search' slot='suffix'></iron-icon></paper-input>
+                        <paper-input type="search" id="category" placeholder="Search By Category" on-input="_handleSearchByCategory"><iron-icon icon='search' slot='suffix'></iron-icon></paper-input>
+                    </div>
 
-                <div class="transferDetails">
-                <paper-radio-group id="radio" on-selected-item-changed ="_change" >
-                Search By:-
-                 <paper-radio-button name="doctor">Doctor Name</paper-radio-button>
-                 <paper-radio-button name="category">Category</paper-radio-button>
-                 <paper-radio-button name="both">Both</paper-radio-button>
-           
-               </paper-radio-group>
-                  
-           <paper-input type="search" id="doctor" placeholder="Search By Doctor" on-input="_handleSearchByDoctor"><iron-icon icon='search' slot='suffix'></iron-icon></paper-input>
-           <paper-input type="search" id="category" placeholder="Search By Category" on-input="_handleSearchByCategory"><iron-icon icon='search' slot='suffix'></iron-icon></paper-input>
-           
-           <h1><u><i>Doctors<i></u></h1>
-           <template is="dom-repeat" items={{doctorList}}>
-           <paper-card  alt="">
-             <div id="drDetails">
-             <div>
-               <h3>Doctor Name:{{item.userName}}</h3>
-               <h3>Education:{{item.educationQualification}}</h3>
-               <h3>Category:{{item.categorySpecialist}}</h3>
-               </div>
-               <div>
-               <h3>Years of Experience:{{item.yearsOfExperience}}</h3>
-               <h3>Ratings:{{item.rating}}</h3>
-               <paper-button id="view" raised>View</paper-button>
-             </div>
-             </div>
-           </paper-card>
-           </template>
+                    <div id='doctorsSearched'>
+                        <h1>Doctors</h1>
+                        <template is="dom-repeat" items={{doctorList}}>
+                            <paper-card>
+                                <div id='cardHeader'>
+                                    <h2>{{item.userName}}</h2><paper-button id="view" raised on-click="_handleViewDoctor">View Slots</paper-button>
+                                </div>
+                                <hr>
+                                <div id="drDetails">
+                                    <div>
+                                        <h3>Education:{{item.educationQualification}}</h3>
+                                        <h3>Category:{{item.categorySpecialist}}</h3>
+                                    </div>
+                                    <div>
+                                        <h3>Years of Experience:{{item.yearsOfExperience}}</h3>
+                                        <h3>Ratings:{{item.rating}}</h3>
+                                    </div>
+                                </div>
+                            </paper-card>
+                        </template>
+                    </div>
                 </div>
             </div>
+               
             
 
             <iron-ajax id='ajax' handle-as='json' on-response='_handleResponse' on-error='_handleError' content-type='application/json'></iron-ajax>
@@ -257,6 +179,22 @@ class LandingPage extends PolymerElement {
             }
         }
     };
+
+    _handleViewDoctor(event) {
+        sessionStorage.setItem('doctorId', event.model.item.userId);
+        console.log(event.model.item.userId, "landing")
+        this.dispatchEvent(new CustomEvent('refresh-doctor', { detail: {}, bubbles: true, composed: true }));
+        // this.set('route.path','#/doctor');
+        window.history.pushState({}, null, '#/doctor');
+        window.dispatchEvent(new CustomEvent('location-changed'));
+    }
+
+    _handleGoToLogin() {
+        //this.set('route.path','#/login');
+        window.history.pushState({}, null, '#/login');
+        window.dispatchEvent(new CustomEvent('location-changed'));
+    }
+
     _change() {
         let radioValue = this.$.radio.selected;
         if (radioValue === 'doctor') {
@@ -300,7 +238,6 @@ class LandingPage extends PolymerElement {
                 if (event.detail.response.statusCode === 200) {
                     console.log(event.detail.response);
                     this.doctorList = event.detail.response.users;
-
                 }
                 else {
                     console.log("handling error");
@@ -315,7 +252,7 @@ class LandingPage extends PolymerElement {
         let searchDoctorObj = { doctorName: this.$.doctor.value, category: this.$.category.value };
         console.log(searchDoctorObj)
         this.action = 'byDoctor'
-        this._makeAjaxCall('http://10.117.189.201:9090/lifelinehealthcare/users', 'post', searchDoctorObj);
+        this._makeAjaxCall('http://10.117.189.181:9090/lifelinehealthcare/users', 'post', searchDoctorObj);
 
     }
     _handleSearchByCategory() {
@@ -323,7 +260,7 @@ class LandingPage extends PolymerElement {
         let searchCategoryObj = { category: this.$.category.value, doctorName: this.$.doctor.value };
         console.log(searchCategoryObj)
         this.action = 'byCategory'
-        this._makeAjaxCall('http://10.117.189.201:9090/lifelinehealthcare/users', 'post', searchCategoryObj);
+        this._makeAjaxCall('http://10.117.189.181:9090/lifelinehealthcare/users', 'post', searchCategoryObj);
     }
 
     _makeAjaxCall(url, method, postObj) {

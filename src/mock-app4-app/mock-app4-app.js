@@ -4,6 +4,7 @@ import '@polymer/app-route/app-location.js';
 import '@polymer/app-route/app-route.js';
 import '@polymer/iron-pages/iron-pages.js';
 import './dashboard-page.js';
+import './doctor-page.js';
 
 setPassiveTouchGestures(true);
 setRootPath(MyAppGlobals.rootPath);
@@ -16,12 +17,12 @@ setRootPath(MyAppGlobals.rootPath);
 class MockApp4App extends PolymerElement {
   static get template() {
     return html`
-    <app-location route="{{route}}" url-space-regex="^[[rootPath]]"></app-location>
+    <app-location route="{{route}}" url-space-regex="^[[rootPath]]" use-hash-as-path></app-location>
     <app-route route="{{route}}" pattern="[[rootPath]]:page" data="{{routeData}}" tail="{{subroute}}"></app-route>     
     <iron-pages selected="[[page]]" attr-for-selected="name" role="main">
       <login-page name="login"></login-page>
       <dashboard-page name="dashboard" id="dashboard"></dashboard-page>
-      <doctor-page name="doctor"></doctor-page>
+      <doctor-page name="doctor" id='doctor'></doctor-page>
       <landing-page name="landing"></landing-page>
       <slot-page name="slot"></slot-page>
       <view404-page name='view404'></view404-page>
@@ -55,6 +56,9 @@ class MockApp4App extends PolymerElement {
     this.addEventListener('refresh-dashboard', function (event) {
       this.$.dashboard._handleUserLogIn();
     });
+    this.addEventListener('refresh-doctor', function (event) {
+      this.$.doctor._handleDoctor();
+    });
     this.addEventListener('new-slot', function (event) {
       this.$.dashboard._handleUserLogIn();
     });
@@ -67,7 +71,7 @@ class MockApp4App extends PolymerElement {
   _routePageChanged(page) {
     console.log(page)
     if (!page) {
-      this.page = 'login';
+      this.page = 'landing';
     } else if (['login', 'dashboard', 'doctor', 'slot', 'landing'].indexOf(page) !== -1) {
       this.page = page;
     } else {
